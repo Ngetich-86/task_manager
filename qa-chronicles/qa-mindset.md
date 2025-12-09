@@ -371,7 +371,7 @@ For each feature, create user personas and test as them:
 
 ---
 
-## 🚫 Common QA Mindset Pitfalls (and How to Avoid Them)
+## ⚠️ Common QA Mindset Pitfalls (and How to Avoid Them)
 
 ### Pitfall 1: **Confirmation Bias**
 **Problem**: Only testing the happy path, expecting things to work  
