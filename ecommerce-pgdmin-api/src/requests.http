@@ -1,0 +1,126 @@
+@baseUrl = http://localhost:3000
+@apiUrl = {{baseUrl}}/api
+
+### Health Check (Database Connection)
+GET {{baseUrl}}/health
+
+### ------------------------------------------------------------------------
+### USERS
+### ------------------------------------------------------------------------
+
+### Get All Users
+GET {{apiUrl}}/users
+
+### Create User
+POST {{apiUrl}}/users
+Content-Type: application/json
+
+{
+    "username": "api_test_user",
+    "email": "apitest@example.com",
+    "password": "password123",
+    "first_name": "Api",
+    "last_name": "Test",
+    "address": "123 API Lane",
+    "phone": "555-0199"
+}
+
+### Get User by ID (Assuming ID 1 exists from init-db)
+GET {{apiUrl}}/users/1
+
+### Update User
+PUT {{apiUrl}}/users/1
+Content-Type: application/json
+
+{
+    "first_name": "Updated Name"
+}
+
+### Delete User (Careful with this)
+# DELETE {{apiUrl}}/users/3
+
+### ------------------------------------------------------------------------
+### PRODUCTS
+### ------------------------------------------------------------------------
+
+### Get All Products
+GET {{apiUrl}}/products
+
+### Create Product
+POST {{apiUrl}}/products
+Content-Type: application/json
+
+{
+    "name": "Gaming Mouse",
+    "description": "High precision gaming mouse",
+    "price": 59.99,
+    "stock_quantity": 50,
+    "category": "Electronics",
+    "image_url": "https://example.com/mouse.jpg"
+}
+
+### Get Product by ID
+GET {{apiUrl}}/products/1
+
+### Update Product
+PUT {{apiUrl}}/products/1
+Content-Type: application/json
+
+{
+    "price": 54.99
+}
+
+### Update Product Stock (Add 10)
+PATCH {{apiUrl}}/products/1/stock
+Content-Type: application/json
+
+{
+    "quantity": 10
+}
+
+### Delete Product
+# DELETE {{apiUrl}}/products/5
+
+### ------------------------------------------------------------------------
+### ORDERS
+### ------------------------------------------------------------------------
+
+### Get All Orders
+GET {{apiUrl}}/orders
+
+### Create Order
+POST {{apiUrl}}/orders
+Content-Type: application/json
+
+{
+    "user_id": 1,
+    "shipping_address": "789 Order St, Shippington",
+    "payment_method": "credit_card",
+    "items": [
+        {
+            "product_id": 1,
+            "quantity": 1
+        },
+        {
+            "product_id": 2,
+            "quantity": 2
+        }
+    ]
+}
+
+### Get Order by ID (Assuming ID 1 exists after creation)
+GET {{apiUrl}}/orders/1
+
+### Get Orders for User
+GET {{apiUrl}}/orders/user/1
+
+### Update Order Status
+PATCH {{apiUrl}}/orders/1/status
+Content-Type: application/json
+
+{
+    "status": "processing"
+}
+
+### Delete Order
+# DELETE {{apiUrl}}/orders/1
