@@ -5,6 +5,18 @@ Welcome to **Task Manager PolyStack Lab**, a multi-tech, multi-discipline learni
 This repository started as a simple “Task Manager” project — but quickly evolved into a **full learning ecosystem** where I experiment with different languages, frameworks, architectures, and testing philosophies.  
 It’s messy, honest, practical, and full of real experiments — exactly how learning should be.
 
+## QA at a glance
+
+[![node-express-backend tests](https://github.com/Ngetich-86/task_manager/actions/workflows/node-express-backend-tests.yml/badge.svg)](https://github.com/Ngetich-86/task_manager/actions/workflows/node-express-backend-tests.yml)
+
+The most complete testing work in this lab is [`node-express-backend/`](node-express-backend):
+
+- **78 Jest tests** (41 unit, 37 API-layer with Supertest), 74.6% statement coverage, run in GitHub Actions on every change.
+- **Grafana k6** smoke, spike and stress profiles with explicit thresholds.
+- Written test plans and case sheets: [`test_execution_plan.md`](node-express-backend/test_execution_plan.md), [`unit_integration_test_plan.md`](node-express-backend/unit_integration_test_plan.md).
+
+Details, exact k6 load shapes and known limitations: [node-express-backend/README.md](node-express-backend/README.md#-testing-suite).
+
 ---
 
 ## Purpose of This Repo

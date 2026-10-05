@@ -126,19 +126,20 @@ Our comprehensive testing strategy ensures code quality, reliability, and perfor
 
 ### 📊 Test Coverage Summary
 
-| Test Type | Count | Coverage | Purpose |
-|-----------|-------|----------|---------|
-| **Unit Tests** | 20 | 90%+ | Individual component testing |
-| **Integration Tests** | 20 | 85%+ | Component interaction testing |
-| **Smoke Tests** | 20 | 100% | Basic functionality validation |
-| **Spike Tests** | 20 | 100% | Sudden load handling |
-| **Stress Tests** | 20 | 100% | System limits and recovery |
+Measured with `pnpm test` (Jest + ts-jest, coverage enabled):
+
+| Layer | Tool | Files | Tests | What it verifies |
+|-------|------|-------|-------|------------------|
+| **Unit** | Jest | 5 | 41 | Services (tasks, categories, users), bearer-auth middleware, mailer failure paths |
+| **API / HTTP layer** | Jest + Supertest | 8 | 37 | Routes through the Express app: auth 401/403/expired token, admin-only routes, 400 validation, 404s, name conflicts, duplicate registration, login states (unknown, deactivated, wrong password, success), task filters |
+| **Performance** | Grafana k6 | 8 scripts | — | Smoke, spike and stress profiles with thresholds (see below); run manually against a local server |
+
+**Result:** 13 suites, **78 tests passing**. Code coverage of `src/`: **74.6% statements, 72.2% branches, 77.3% functions, 73.8% lines**.
+
+> The API-layer suites mock the database module (`jest.mock('../../src/drizzle/db')`), so they verify routing, validation, authorization and error mapping, **not** real SQL behavior.
 
 ### 🔬 Unit Testing
 
-![Unit Testing](images/unit-testing.png)
-
-*Testing individual functions, services, and middleware in isolation*
 
 **Key Areas Covered:**
 -  Authentication Services (Login, Registration, Password handling)
@@ -169,13 +170,10 @@ describe('Auth Service - User Login', () => {
 
 ### 🔗 Integration Testing
 
-![Integration Testing](images/integration-testing.png)
-
-*Testing how different components work together*
 
 **Key Areas Covered:**
 -  API Endpoints (Complete CRUD operations)
--  Database Integration (Connection, queries, transactions)
+-  Database access mocked at the module boundary (real SQL is not exercised)
 -  Authentication Flow (JWT token generation and validation)
 -  Error Handling (Global error handling and responses)
 -  Security (Headers, validation, authorization)
@@ -205,14 +203,8 @@ describe('Task API Integration', () => {
 
 ### 📈 Load Testing with K6
 
-![Load Testing](images/load-testing.png)
-
-*Performance testing under various load conditions*
 
 #### 🚬 Smoke Tests
-![Smoke Tests](images/smoke-tests.png)
-
-*Basic functionality validation under normal conditions*
 
 **Test Scenarios:**
 - Authentication flows (Login, Registration)
@@ -232,9 +224,6 @@ k6 run load-tests/smoke/task.smoke.ts
 ```
 
 #### ⚡ Spike Tests
-![Spike Tests](images/spike-tests.png)
-
-*Testing system behavior under sudden load spikes*
 
 **Load Pattern:**
 - Baseline: 10 users (30s)
@@ -249,9 +238,6 @@ k6 run load-tests/spike/task.spike.ts
 ```
 
 #### 💪 Stress Tests
-![Stress Tests](images/stress-tests.png)
-
-*Pushing system to its limits and beyond*
 
 **Load Stages:**
 - Moderate: 50 users (7m)
@@ -265,11 +251,25 @@ k6 run load-tests/spike/task.spike.ts
 k6 run load-tests/stress/tasks.stress.ts
 ```
 
+### k6 profiles (as configured)
+
+| Profile | Script(s) | Load shape | Thresholds |
+|---------|-----------|------------|------------|
+| Smoke | `load-tests/smoke/*.smoke.ts` (6) | 1 VU, about 1–4 min | p95 < 500–1000 ms, `http_req_failed` < 10–20% |
+| Spike | `load-tests/spike/task.spike.ts` | 10 → 100 → 20 → 150 VUs, about 6.5 min | p95 < 2 s, `http_req_failed` < 30% |
+| Stress | `load-tests/stress/tasks.stress.ts` | 50 → 150 → 300 → 500 VUs, about 41 min | p95 < 5 s, `http_req_failed` < 50%, task creation success > 30% |
+
+These thresholds describe what each profile checks; they are not capacity claims. Results depend on the machine and database the server runs against. The stress thresholds are deliberately lenient (they look for the breaking point rather than an SLO), and no k6 run is part of CI.
+
+### ⚠️ Known limitations
+
+- API-layer tests use a mocked database; there are no tests against a real PostgreSQL instance in this package.
+- k6 scripts are run manually; there is no automated performance baseline or trend.
+- `soak:task` in `package.json` points to a soak script that does not exist yet.
+- Coverage is collected but no minimum threshold is enforced.
+
 ### 📋 Test Case Documentation
 
-![Test Cases](images/test-cases.png)
-
-*Comprehensive test case documentation in Excel format*
 
 **Available Test Case Files:**
 - `test_cases_smoke.xlsx` - 20 smoke test scenarios
@@ -279,9 +279,6 @@ k6 run load-tests/stress/tasks.stress.ts
 
 ### 🎯 Test Execution Plan
 
-![Test Execution Plan](images/test-execution-plan.png)
-
-*Structured approach to running all test types*
 
 **Execution Order:**
 1. **Unit Tests** - Foundation testing
@@ -292,9 +289,6 @@ k6 run load-tests/stress/tasks.stress.ts
 
 ### 📊 Test Results Template
 
-![Test Results](images/test-results.png)
-
-*Standardized format for recording test execution results*
 
 **Results Tracking:**
 - Test execution status (Pass/Fail)
@@ -324,7 +318,6 @@ node-express-backend/
 │   ├── integration/    # Integration tests
 │   └── setup/          # Test configuration
 ├── docs/               # Documentation
-├── images/             # README images
 └── README.md           # This file
 ```
 
@@ -508,8 +501,8 @@ For support and questions:
 
 **Built with ❤️ and comprehensive testing**
 
-[![Test Coverage](images/test-coverage-badge.png)](https://github.com/yourusername/angular-task-manager)
-[![Build Status](images/build-status-badge.png)](https://github.com/yourusername/angular-task-manager/actions)
-[![Code Quality](images/code-quality-badge.png)](https://github.com/yourusername/angular-task-manager)
+[](https://github.com/yourusername/angular-task-manager)
+[](https://github.com/yourusername/angular-task-manager/actions)
+[](https://github.com/yourusername/angular-task-manager)
 
 </div>
