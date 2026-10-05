@@ -1,0 +1,50 @@
+name: node-express-backend tests
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "node-express-backend/**"
+      - ".github/workflows/node-express-backend-tests.yml"
+  pull_request:
+    paths:
+      - "node-express-backend/**"
+      - ".github/workflows/node-express-backend-tests.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  jest:
+    name: Jest unit + API (Supertest) tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: node-express-backend
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+
+      # pnpm version comes from package.json "packageManager" via corepack.
+      - name: Enable pnpm
+        run: corepack enable && pnpm --version
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # The database module is mocked in these suites, so no PostgreSQL service is needed.
+      - name: Run tests with coverage
+        run: pnpm test -- --ci
+
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: node-express-backend-coverage
+          path: node-express-backend/coverage/
+          retention-days: 14
