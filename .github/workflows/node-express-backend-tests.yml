@@ -39,7 +39,7 @@ jobs:
 
       # The database module is mocked in these suites, so no PostgreSQL service is needed.
       - name: Run tests with coverage
-        run: pnpm test -- --ci
+        run: pnpm exec jest --ci
 
       - name: Upload coverage report
         if: always()
